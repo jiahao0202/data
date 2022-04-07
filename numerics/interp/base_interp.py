@@ -10,3 +10,11 @@ class BaseInterp1d(ABC):
     @abstractmethod
     def interp(self, x_) -> float:
         raise NotImplemented
+
+    @property
+    def _x_vals(self):
+        return self.__x
+
+    @property
+    def _y_vals(self):
+        return self.__y
