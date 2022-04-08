@@ -43,3 +43,8 @@ class MarketData(object):
 
     def get_dividend_rate(self, tau):
         return self.__dividend_curve.discount(tau)
+
+    @classmethod
+    def load_market_data(cls, **kwargs):
+        # TODO
+        pass
