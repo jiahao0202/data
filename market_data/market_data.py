@@ -1,10 +1,7 @@
+from builder import Builder
 from curve.base_curve import BaseCurve
-from curve.const_curve import ConstCurve
-from curve.term_curve import TermCurve
 from datetime import datetime
 from surface.base_surface import BaseVolSurface
-from surface.const_vol_surface import ConstVolSurface
-from surface.term_vol_surface import TermVolSurface
 
 
 class MarketData(object):
@@ -45,6 +42,7 @@ class MarketData(object):
         return self.__dividend_curve.discount(tau)
 
     @classmethod
-    def load_market_data(cls, **kwargs):
-        # TODO
+    def create_market_data(cls):
         pass
+    # TODO use builder to create market data
+
