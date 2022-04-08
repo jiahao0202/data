@@ -2,6 +2,7 @@ from abc import ABC
 from datetime import datetime
 from numerics.interp.linear_interp import LinearInterp1d
 from surface.base_surface import BaseVolSurface
+import math
 
 
 class TermVolSurface(BaseVolSurface, ABC):
@@ -11,5 +12,16 @@ class TermVolSurface(BaseVolSurface, ABC):
                  vols: list):
         super().__init__(valuation_date)
         assert len(terms) == len(vols), "the lengths of terms and vols must match"
-        vars = [terms[i] * vols[i] ** 2 for i in range(len(terms))]
-        self.__interp = LinearInterp1d(x=terms, y=vars,)
+        variances = [terms[i] * vols[i] ** 2 for i in range(len(terms))]
+        self.__interp = LinearInterp1d(x=terms, y=variances, mode='flat')
+        self.__terms = terms
+        self.__vols = vols
+    
+    def vol(self, tau):
+        if tau <= min(self.__terms):
+            return self.__vols[0]
+        elif tau >= max(self.__terms):
+            return self.__vols[-1]
+        else:
+            variance = self.__interp.interp(tau)
+            return math.sqrt(variance / tau)
