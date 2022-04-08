@@ -9,13 +9,13 @@ class TermVolSurface(BaseVolSurface, ABC):
     def __init__(self,
                  valuation_date: datetime,
                  terms: list,
-                 vols: list):
+                 term_vols: list):
         super().__init__(valuation_date)
-        assert len(terms) == len(vols), "the lengths of terms and vols must match"
-        variances = [terms[i] * vols[i] ** 2 for i in range(len(terms))]
+        assert len(terms) == len(term_vols), "the lengths of terms and vols must match"
+        variances = [terms[i] * term_vols[i] ** 2 for i in range(len(terms))]
         self.__interp = LinearInterp1d(x=terms, y=variances, mode='flat')
         self.__terms = terms
-        self.__vols = vols
+        self.__vols = term_vols
     
     def vol(self, tau):
         if tau <= min(self.__terms):
