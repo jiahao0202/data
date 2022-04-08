@@ -9,11 +9,11 @@ class TestSurface(unittest.TestCase):
         valuation_date = datetime(2020, 1, 1)
         self.const_rate = 0.3
         self.const_surface = ConstVolSurface(valuation_date=valuation_date,
-                                             const_rate=self.const_rate
+                                             const_vol=self.const_rate
                                              )
         self.term_vol_surface = TermVolSurface(valuation_date=valuation_date,
                                                terms=[0.5, 1, 2],
-                                               vols=[0.5, 0.6, 0.65]
+                                               term_vols=[0.5, 0.6, 0.65]
                                                )
 
     def test_const_surface(self):
