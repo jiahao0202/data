@@ -10,7 +10,7 @@ class TestCurve(unittest.TestCase):
         valuation_date = datetime(2020, 1, 1)
         self.const_rate = 0.025
         self.const_curve = ConstCurve(valuation_date=valuation_date,
-                                      rate=self.const_rate)
+                                      const_rate=self.const_rate)
         self.term_curve = TermCurve(valuation_date=valuation_date,
                                     terms=[1, 2, 3],
                                     rates=[0.02, 0.025, 0.028])

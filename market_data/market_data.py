@@ -11,7 +11,7 @@ class MarketData(object):
     def __init__(self,
                  valuation_date: datetime,
                  vol_surface: BaseVolSurface,
-                 discounting_curve, BaseCurve,
+                 discounting_curve: BaseCurve,
                  dividend_curve: BaseCurve
                  ):
         self.__valuation_date = valuation_date
@@ -34,3 +34,12 @@ class MarketData(object):
     @property
     def dividend_curve(self) -> BaseCurve:
         return self.__dividend_curve
+
+    def get_vol(self, tau, strike):
+        return self.__vol_surface.vol(tau, strike)
+
+    def get_discounting_rate(self, tau):
+        return self.__discounting_curve.discount(tau)
+
+    def get_dividend_rate(self, tau):
+        return self.__dividend_curve.discount(tau)

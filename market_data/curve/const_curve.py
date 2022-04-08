@@ -7,9 +7,9 @@ import math
 class ConstCurve(BaseCurve, ABC):
     def __init__(self,
                  valuation_date: datetime,
-                 rate: float):
+                 const_rate: float):
         super().__init__(valuation_date)
-        self.__rate = rate
+        self.__rate = const_rate
 
     def rate(self, tau) -> float:
         return self.__rate
