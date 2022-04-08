@@ -1,9 +1,9 @@
 from abc import ABC
 from datetime import datetime
-from surface.base_surface import BaseSurface
+from surface.base_surface import BaseVolSurface
 
 
-class ConstantSurface(BaseSurface, ABC):
+class ConstVolSurface(BaseVolSurface, ABC):
     def __init__(self,
                  valuation_date: datetime,
                  const_rate):

@@ -1,13 +1,13 @@
 import unittest
 from datetime import datetime
-from surface.const_surface import ConstantSurface
+from surface.const_vol_surface import ConstVolSurface
 
 
 class TestSurface(unittest.TestCase):
     def setUp(self) -> None:
         valuation_date = datetime(2020, 1, 1)
         self.const_rate = 0.3
-        self.const_surface = ConstantSurface(valuation_date=valuation_date,
+        self.const_surface = ConstVolSurface(valuation_date=valuation_date,
                                              const_rate=self.const_rate)
 
     def test_const_surface(self):

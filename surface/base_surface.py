@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 
 
-class BaseSurface(ABC):
+class BaseVolSurface(ABC):
     def __init__(self,
                  valuation_date: datetime
                  ):
