@@ -1,7 +1,7 @@
 from abc import ABC
 from datetime import datetime
 from numerics.interp.linear_interp import LinearInterp1d
-from surface.base_surface import BaseVolSurface
+from market_data.surface.base_surface import BaseVolSurface
 import math
 
 

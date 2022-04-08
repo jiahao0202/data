@@ -1,6 +1,6 @@
 from abc import ABC
 from datetime import datetime
-from surface.base_surface import BaseVolSurface
+from market_data.surface.base_surface import BaseVolSurface
 
 
 class ConstVolSurface(BaseVolSurface, ABC):

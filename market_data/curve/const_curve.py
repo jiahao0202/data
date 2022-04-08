@@ -1,5 +1,5 @@
 from abc import ABC
-from curve.base_curve import BaseCurve
+from market_data.curve.base_curve import BaseCurve
 from datetime import datetime
 import math
 

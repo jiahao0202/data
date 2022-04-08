@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
-from surface.const_vol_surface import ConstVolSurface
-from surface.term_vol_surface import TermVolSurface
+from market_data.surface.const_vol_surface import ConstVolSurface
+from market_data.surface.term_vol_surface import TermVolSurface
 
 
 class TestSurface(unittest.TestCase):

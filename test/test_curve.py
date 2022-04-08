@@ -1,5 +1,5 @@
-from curve.const_curve import ConstCurve
-from curve.term_curve import TermCurve
+from market_data.curve.const_curve import ConstCurve
+from market_data.curve.term_curve import TermCurve
 from datetime import datetime
 import math
 import unittest
