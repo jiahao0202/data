@@ -1,6 +1,7 @@
 from builder import Builder
 from curve.base_curve import BaseCurve
 from datetime import datetime
+from params import CurveParam, VolSurfaceParam
 from surface.base_surface import BaseVolSurface
 
 
@@ -42,7 +43,15 @@ class MarketData(object):
         return self.__dividend_curve.discount(tau)
 
     @classmethod
-    def create_market_data(cls):
-        pass
-    # TODO use builder to create market data
-
+    def create_market_data(cls,
+                           vol_param: VolSurfaceParam,
+                           discounting_curve_param: CurveParam,
+                           dividend_curve_param: CurveParam):
+        valuation_date = vol_param.surface_param['valuation_date']
+        vol_surface = Builder.build_vol_surface(vol_param)
+        discounting_curve = Builder.build_curve(discounting_curve_param)
+        dividend_curve = Builder.build_curve(dividend_curve_param)
+        return cls(valuation_date=valuation_date,
+                   vol_surface=vol_surface,
+                   discounting_curve=discounting_curve,
+                   dividend_curve=dividend_curve)
