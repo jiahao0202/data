@@ -12,5 +12,5 @@ class CurveTypeEnum(Enum):
 
 
 class OptionTypeEnum(Enum):
-    Call = "call"
+    Call = "Call"
     Put = "Put"
