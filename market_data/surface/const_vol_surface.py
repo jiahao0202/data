@@ -12,3 +12,10 @@ class ConstVolSurface(BaseVolSurface, ABC):
 
     def vol(self, *args):
         return self.__const_rate
+
+    def bump(self, bump_size, is_bump_pct=False):
+        if is_bump_pct:
+            const_vol = self.__const_rate * (1 + bump_size)
+        else:
+            const_vol = self.__const_rate + bump_size
+        return ConstVolSurface(self.valuation_date, const_vol=const_vol)

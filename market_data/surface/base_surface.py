@@ -15,3 +15,7 @@ class BaseVolSurface(ABC):
     @abstractmethod
     def vol(self, *args):
         raise NotImplemented
+
+    @abstractmethod
+    def bump(self, bump_size, is_bump_pct=False):
+        raise NotImplemented
