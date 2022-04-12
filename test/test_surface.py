@@ -1,4 +1,3 @@
-import math
 import unittest
 from datetime import datetime
 from market_data.surface.const_vol_surface import ConstVolSurface
@@ -18,7 +17,6 @@ class TestSurface(unittest.TestCase):
                                                )
         self.bump_size = 0.01
         self.const_surface_bump = self.const_surface.bump(self.bump_size, True)
-        self.term_vol_surface_bump = self.term_vol_surface.bump(self.bump_size, False)
 
     def test_const_surface(self):
         for term in [0.5, 1, 2]:
@@ -38,6 +36,4 @@ class TestSurface(unittest.TestCase):
         for i in range(len(terms)):
             term = terms[i]
             step_vol = self.term_vol_surface.vol(tau=term)
-            step_vol_bump = self.term_vol_surface_bump.vol(tau=term)
             self.assertAlmostEqual(step_vol**2 * term, variances[i])
-            self.assertAlmostEqual(step_vol_bump, step_vol + self.bump_size)
