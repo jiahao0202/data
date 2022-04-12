@@ -20,3 +20,7 @@ class BaseCurve(ABC):
     @abstractmethod
     def rate(self, tau) -> float:
         raise NotImplemented
+
+    @abstractmethod
+    def bump(self, bump_size, is_bump_pct=False):
+        raise NotImplemented

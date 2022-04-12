@@ -9,12 +9,17 @@ class ConstCurve(BaseCurve, ABC):
                  valuation_date: datetime,
                  const_rate: float):
         super().__init__(valuation_date)
-        self.__rate = const_rate
+        self.__const_rate = const_rate
 
     def rate(self, tau) -> float:
-        return self.__rate
+        return self.__const_rate
 
     def discount(self, tau) -> float:
-        return math.exp(-self.__rate * tau)
+        return math.exp(-self.__const_rate * tau)
 
-
+    def bump(self, bump_size, is_bump_pct=False):
+        if is_bump_pct:
+            const_rate = self.__const_rate * (1 + bump_size)
+        else:
+            const_rate = self.__const_rate + bump_size
+        return ConstCurve(self.valuation_date, const_rate=const_rate)
