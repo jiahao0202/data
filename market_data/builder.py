@@ -1,3 +1,4 @@
+from gateway.params.greeks_params import GreeksParams
 from market_data.curve.const_curve import ConstCurve
 from market_data.curve.term_curve import TermCurve
 from market_data.params import CurveParam, VolSurfaceParam
@@ -30,3 +31,7 @@ class Builder:
             return TermCurve(valuation_date=param['valuation_date'],
                              terms=param['terms'],
                              rates=param['rates'])
+
+    @staticmethod
+    def get_default_greeks_params():
+        return GreeksParams(1e-2, 1e-2, 1e-4, 1e-4)
