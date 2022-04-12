@@ -4,7 +4,7 @@ from product.instrument import Instrument
 from utils.product_util import OptionTypeEnum
 
 
-class VanillaOption(Instrument, ABC):
+class DigitalOption(Instrument, ABC):
     def __init__(self,
                  expiration_date: datetime,
                  strike: float,
