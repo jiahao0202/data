@@ -28,8 +28,6 @@ class TermVolSurface(BaseVolSurface, ABC):
 
     def bump(self, bump_size, is_bump_pct=False):
 
-        # TODO: to fix the bump of term vol surface
-
         if is_bump_pct:
             term_vols = [x * (1 + bump_size) for x in self.__term_vols]
         else:
