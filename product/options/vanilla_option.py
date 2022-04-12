@@ -1,10 +1,14 @@
 from abc import ABC
 from datetime import datetime
 from product.instrument import Instrument
+from utils.pricer_util import PricerEnum
 from utils.product_util import OptionTypeEnum
 
 
 class VanillaOption(Instrument, ABC):
+
+    PricingTypes = [PricerEnum.Analytical, PricerEnum.MonteCarlo]
+
     def __init__(self,
                  expiration_date: datetime,
                  strike: float,
