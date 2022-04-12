@@ -8,11 +8,13 @@ from surface.base_surface import BaseVolSurface
 class MarketData(object):
     def __init__(self,
                  valuation_date: datetime,
+                 spot: float,
                  vol_surface: BaseVolSurface,
                  discounting_curve: BaseCurve,
                  dividend_curve: BaseCurve
                  ):
         self.__valuation_date = valuation_date
+        self.__spot = spot
         self.__vol_surface = vol_surface
         self.__discounting_curve = discounting_curve
         self.__dividend_curve = dividend_curve
@@ -20,6 +22,10 @@ class MarketData(object):
     @property
     def valuation_date(self) -> datetime:
         return self.__valuation_date
+
+    @property
+    def spot(self) -> float:
+        return self.__spot
 
     @property
     def vol_surface(self) -> BaseVolSurface:
@@ -44,6 +50,7 @@ class MarketData(object):
 
     @classmethod
     def create_market_data(cls,
+                           spot: float,
                            vol_param: VolSurfaceParam,
                            discounting_curve_param: CurveParam,
                            dividend_curve_param: CurveParam):
@@ -52,6 +59,7 @@ class MarketData(object):
         discounting_curve = Builder.build_curve(discounting_curve_param)
         dividend_curve = Builder.build_curve(dividend_curve_param)
         return cls(valuation_date=valuation_date,
+                   spot=spot,
                    vol_surface=vol_surface,
                    discounting_curve=discounting_curve,
                    dividend_curve=dividend_curve)
