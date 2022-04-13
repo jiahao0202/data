@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-class TimeUtils:
+class TimeUtil:
 
     @staticmethod
     def time_diff_natural_day(valuation_date: datetime, expiration_date: datetime):

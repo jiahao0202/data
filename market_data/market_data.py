@@ -39,7 +39,7 @@ class MarketData(object):
     def dividend_curve(self) -> BaseCurve:
         return self.__dividend_curve
 
-    def get_vol(self, tau, strike):
+    def get_volatility(self, tau, strike):
         return self.__vol_surface.vol(tau, strike)
 
     def get_discounting_rate(self, tau):

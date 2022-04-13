@@ -20,4 +20,4 @@ class PricingGateway:
             if isinstance(instrument, VanillaOption):
                 assert pricing_params.pricing_type in VanillaOption.PricingTypes, \
                     "Vanilla Option does not apply to {} pricer".format(pricing_params.pricing_type.value)
-                return BlackCalculator.calc_vanilla_option(requests, instrument, market_data, greeks_params)
+                return BlackCalculator.calc_vanilla_option(requests, instrument, market_data)
