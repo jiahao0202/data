@@ -1,8 +1,8 @@
-from builder import Builder
-from curve.base_curve import BaseCurve
 from datetime import datetime
-from params import CurveParam, VolSurfaceParam
-from surface.base_surface import BaseVolSurface
+from market_data.builder import Builder
+from market_data.curve.base_curve import BaseCurve
+from market_data.surface.base_surface import BaseVolSurface
+from market_data.market_data_params import CurveParam, VolSurfaceParam
 
 
 class MarketData(object):

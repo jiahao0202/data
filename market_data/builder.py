@@ -1,7 +1,8 @@
 from gateway.params.greeks_params import GreeksParams
+from gateway.params.pricing_params import AnalyticPricingParam
 from market_data.curve.const_curve import ConstCurve
 from market_data.curve.term_curve import TermCurve
-from market_data.params import CurveParam, VolSurfaceParam
+from market_data.market_data_params import CurveParam, VolSurfaceParam
 from market_data.surface.const_vol_surface import ConstVolSurface
 from market_data.surface.term_vol_surface import TermVolSurface
 from utils.product_util import CurveTypeEnum, SurfaceTypeEnum
@@ -31,6 +32,10 @@ class Builder:
             return TermCurve(valuation_date=param['valuation_date'],
                              terms=param['terms'],
                              rates=param['rates'])
+
+    @staticmethod
+    def get_analytical_pricer():
+        return AnalyticPricingParam()
 
     @staticmethod
     def get_default_greeks_params():
