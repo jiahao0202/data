@@ -25,7 +25,7 @@ def process_individual_stock(stock: pd.DataFrame, vol_scheme: str):
     expiration_date = max(stock.index)
     stock['tau'] = stock.apply(lambda x: MetaData.year_fraction_trading(x.name, expiration_date), axis=1)
     if vol_scheme.startswith("flat"):
-        stock['vol'] = stock[vol_scheme]
+        stock['vol'] = stock[vol_schemes[vol_scheme]]
     else:
         terms = [x / 252 for x in vol_terms[vol_scheme]]
         stock['vol_surface'] = stock.apply(lambda x:
@@ -33,5 +33,5 @@ def process_individual_stock(stock: pd.DataFrame, vol_scheme: str):
                                                           terms=terms,
                                                           term_vols=list(x.loc[vol_schemes[vol_scheme]])),
                                            axis=1)
-        stock['vol'] = stock.apply(lambda x: x['vol_surface'].vol(tau=x['tau'], strike=1.))
+        stock['vol'] = stock.apply(lambda x: x['vol_surface'].vol(tau=x['tau']), axis=1)
     return stock[['close', 'tau', 'r', 'q', 'vol']]

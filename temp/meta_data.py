@@ -11,11 +11,12 @@ def decode_pickle(file):
 
 
 class MetaData(metaclass=Singleton):
-    trading_cal = decode_pickle("exp_data/trade_cal.pickle")
-    exp_map_1mo = decode_pickle('exp_data/exp_1m.pickle')
-    exp_map_3mo = decode_pickle('exp_data/exp_3m.pickle')
-    exp_map_6mo = decode_pickle('exp_data/exp_6m.pickle')
-    exp_map_12mo = decode_pickle('exp_data/exp_12m.pickle')
+    stocks = decode_pickle('../temp/stocks.pickle')
+    trading_cal = decode_pickle('../temp/exp_data/trade_cal.pickle')
+    exp_map_1mo = decode_pickle('../temp/exp_data/exp_1m.pickle')
+    exp_map_3mo = decode_pickle('../temp/exp_data/exp_3m.pickle')
+    exp_map_6mo = decode_pickle('../temp/exp_data/exp_6m.pickle')
+    exp_map_12mo = decode_pickle('../temp/exp_data/exp_12m.pickle')
 
     @staticmethod
     def year_fraction_trading(valuation_date: datetime, expiration_date: datetime):
