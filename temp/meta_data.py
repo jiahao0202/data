@@ -12,6 +12,7 @@ def decode_pickle(file):
 
 class MetaData(metaclass=Singleton):
     trading_cal = decode_pickle("./trade_cal.pickle")
+    exp_map_1mo = decode_pickle('./exp_1m.pickle')
     exp_map_3mo = decode_pickle('./exp_3m.pickle')
     exp_map_6mo = decode_pickle('./exp_6m.pickle')
     exp_map_12mo = decode_pickle('./exp_12m.pickle')
@@ -27,6 +28,10 @@ class MetaData(metaclass=Singleton):
     def year_fraction(valuation_date: datetime, expiration_date: datetime):
         date_diff = (expiration_date.timestamp() - valuation_date.timestamp()) / (3600 * 24)
         return date_diff / 365.
+
+    @staticmethod
+    def get_expiration_date_1mo(valuation_date) -> datetime:
+        return datetime.strptime(MetaData.exp_map_1mo[valuation_date], "%Y-%m-%d")
 
     @staticmethod
     def get_expiration_date_3mo(valuation_date) -> datetime:
