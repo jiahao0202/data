@@ -1,63 +1,68 @@
-from math import exp, sqrt
+from math import exp, log, sqrt
 from scipy.stats import norm
 from scipy.special import ndtr
 from utils.product_util import OptionTypeEnum
 
 
 class VanillaOptionPricer:
-    def __init__(self, spot, strike, vol, r, q, tau, option_type: OptionTypeEnum):
-        self.spot = spot
-        self.strike = strike
-        self.vol = vol
-        self.r = r
-        self.q = q
-        self.tau = tau
-        self.option_type = option_type
-        self.d1 = self.__d1()
-        self.d2 = self.d1 - self.vol * sqrt(tau)
+    @staticmethod
+    def __d1(spot, strike, vol, r, q, tau):
+        return (log(spot / strike) + (r - q + .5 * vol ** 2) * tau) / (sqrt(tau) * vol)
+    
+    @staticmethod
+    def price(spot, strike, vol, r, q, tau, option_type) -> float:
+        if tau < 1. / 244.:
+            return max(0, spot-strike) if option_type == OptionTypeEnum.Call else max(0, strike-spot)
+        d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
+        d2 = d1 - vol * sqrt(tau)
+        if option_type == OptionTypeEnum.Call:
+            return spot * exp(-q * tau) * ndtr(d1) - strike * exp(-r * tau) * ndtr(d2)
+        elif option_type == OptionTypeEnum.Put:
+            return -spot * exp(-q * tau) * ndtr(-d1) + strike * exp(-r * tau) * ndtr(-d2)
 
-    def __d1(self):
-        return (self.spot / self.strike + (self.r - self.q + .5 * self.vol ** 2) * self.tau) / \
-               (self.vol * sqrt(self.tau))
+    @staticmethod
+    def delta(spot, strike, vol, r, q, tau, option_type) -> float:
+        if tau < 1. / 244.:
+            return max(0, spot-strike) if option_type == OptionTypeEnum.Call else max(0, strike-spot)
+        d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
+        if option_type == OptionTypeEnum.Call:
+            return exp(-q * tau) * ndtr(d1)
+        elif option_type == OptionTypeEnum.Put:
+            return exp(-q * tau) * (ndtr(d1) - 1)
 
-    def price(self) -> float:
-        if self.option_type == OptionTypeEnum.Call:
-            return self.spot * exp(-self.q * self.tau) * ndtr(self.d1) - \
-                self.strike * exp(-self.r * self.tau) * ndtr(self.d2)
-        elif self.option_type == OptionTypeEnum.Put:
-            return -self.spot * exp(-self.q * self.tau) * ndtr(-self.d1) + \
-                self.strike * exp(-self.r * self.tau) * ndtr(-self.d2)
+    @staticmethod
+    def gamma(spot, strike, vol, r, q, tau, option_type) -> float:
+        d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
+        return exp(-q * tau) * norm.pdf(d1)
 
-    def delta(self) -> float:
-        if self.option_type == OptionTypeEnum.Call:
-            return exp(-self.q * self.tau) * ndtr(self.d1)
-        elif self.option_type == OptionTypeEnum.Put:
-            return exp(-self.q * self.tau) * (ndtr(self.d1) - 1)
+    @staticmethod
+    def theta(spot, strike, vol, r, q, tau, option_type) -> float:
+        d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
+        d2 = d1 - vol * sqrt(tau)
+        if option_type == OptionTypeEnum.Call:
+            return -vol * spot * exp(-q * tau) * norm.pdf(d1) / (2 * sqrt(tau)) + \
+                   q * spot * ndtr(d1) * exp(-q * tau) - r * strike * exp(-r * tau) * ndtr(d2)
+        elif option_type == OptionTypeEnum.Put:
+            return -vol * spot * exp(-q * tau) * norm.pdf(-d1) / (2 * sqrt(tau)) - \
+                   q * spot * ndtr(-d1) * exp(-q * tau) + r * strike * exp(-r * tau) * ndtr(d2)
 
-    def gamma(self) -> float:
-        return exp(-self.q * self.tau) * norm.pdf(self.d1)
+    @staticmethod
+    def vega(spot, strike, vol, r, q, tau, option_type) -> float:
+        d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
+        return spot * sqrt(tau) * exp(-q * tau) * norm.pdf(d1)
 
-    def theta(self) -> float:
-        if self.option_type == OptionTypeEnum.Call:
-            return -self.vol * self.spot * exp(-self.q * self.tau) * norm.pdf(self.d1) / (2 * sqrt(self.tau)) + \
-                   self.q * self.spot * ndtr(self.d1) * exp(-self.q * self.tau) - \
-                   self.r * self.strike * exp(-self.r * self.tau) * ndtr(self.d2)
-        elif self.option_type == OptionTypeEnum.Put:
-            return -self.vol * self.spot * exp(-self.q * self.tau) * norm.pdf(-self.d1) / (2 * sqrt(self.tau)) - \
-                   self.q * self.spot * ndtr(-self.d1) * exp(-self.q * self.tau) + \
-                   self.r * self.strike * exp(-self.r * self.tau) * ndtr(self.d2)
+    @staticmethod
+    def rho(spot, strike, vol, r, q, tau, option_type) -> float:
+        d2 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau) - vol * sqrt(tau)
+        if option_type == OptionTypeEnum.Call:
+            return strike * tau * exp(-r * tau) * ndtr(d2)
+        elif option_type == OptionTypeEnum.Put:
+            return -strike * tau * exp(-r * tau) * ndtr(-d2)
 
-    def vega(self) -> float:
-        return self.spot * sqrt(self.tau) * exp(-self.q * self.tau) * norm.pdf(self.d1)
-
-    def rho(self) -> float:
-        if self.option_type == OptionTypeEnum.Call:
-            return self.strike * self.tau * exp(-self.r * self.tau) * ndtr(self.d2)
-        elif self.option_type == OptionTypeEnum.Put:
-            return -self.strike * self.tau * exp(-self.r * self.tau) * ndtr(-self.d2)
-
-    def phi(self) -> float:
-        if self.option_type == OptionTypeEnum.Call:
-            return -self.tau * self.spot * exp(-self.q * self.tau) * ndtr(self.d1)
-        elif self.option_type == OptionTypeEnum.Put:
-            return self.tau * self.spot * exp(-self.q * self.tau) * ndtr(-self.d1)
+    @staticmethod
+    def phi(spot, strike, vol, r, q, tau, option_type) -> float:
+        d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
+        if option_type == OptionTypeEnum.Call:
+            return -tau * spot * exp(-q * tau) * ndtr(d1)
+        elif option_type == OptionTypeEnum.Put:
+            return tau * spot * exp(-q * tau) * ndtr(-d1)
