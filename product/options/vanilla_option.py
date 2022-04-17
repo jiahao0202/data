@@ -25,7 +25,3 @@ class VanillaOption(Instrument, ABC):
     @property
     def option_type(self) -> OptionTypeEnum:
         return self.__option_type
-
-    def payoff(self, spot):
-        return max(spot - self.__strike, 0.) if self.__option_type == OptionTypeEnum.Call \
-            else max(self.__strike - spot, 0.)

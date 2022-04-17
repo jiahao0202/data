@@ -21,7 +21,3 @@ class DigitalOption(Instrument, ABC):
     @property
     def option_type(self) -> OptionTypeEnum:
         return self.__option_type
-
-    def payoff(self, spot):
-        return 1. if spot > self.strike else 0. if self.__option_type == OptionTypeEnum.Call \
-                else 1. if spot < self.strike else 0.

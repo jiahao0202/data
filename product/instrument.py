@@ -9,7 +9,3 @@ class Instrument(ABC):
     @property
     def expiration_date(self):
         return self.__expiration_date
-
-    @abstractmethod
-    def payoff(self, *args):
-        raise NotImplemented
