@@ -13,7 +13,7 @@ def rng(num_paths, tau, dt, fixings):
 
 
 @jit(nopython=True)
-def autocall_mc_pricer(normal_dist, spot, r, q, vol, tau, exp_tau, dt, ko_list, num_paths, ko_price, ki_price,
+def autocall_mc_pricer(normal_dist, initial_price, spot, r, q, vol, tau, exp_tau, dt, ko_list, num_paths, ko_price, ki_price,
                        coupon_rate,
                        natural_day_list, notional=1000000):
     step_size = round(exp_tau / dt)
@@ -41,7 +41,7 @@ def autocall_mc_pricer(normal_dist, spot, r, q, vol, tau, exp_tau, dt, ko_list, 
     for i in range(num_paths):
         if flag_ko[i] == 0:
             if np.min(paths[i]) < ki_price:
-                payoffs[i] = notional * np.minimum(paths[i, -1] / paths[i, 0] - 1, 0) * \
+                payoffs[i] = notional * np.minimum(paths[i, -1] / initial_price - 1, 0) * \
                              np.exp(-r * natural_day_list[-1] / 365)
                 flag_ki[i] = 1
     payoffs = np.where(flag_ko + flag_ki == 0,
