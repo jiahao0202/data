@@ -9,8 +9,8 @@ def rng(num_paths, tau, dt):
 
 
 @jit(nopython=True)
-def mc_pricer(normal_dist, spot, r, q, vol, tau, dt, ko_list, num_paths, ko_price, ki_price, coupon_rate,
-              natural_day_list, notional):
+def autocall_mc_pricer(normal_dist, spot, r, q, vol, tau, dt, ko_list, num_paths, ko_price, ki_price, coupon_rate,
+                       natural_day_list, notional=1000000):
     step_size = round(tau / dt)
     paths = np.zeros((num_paths, step_size + 1))
     paths[:, 0] = spot
@@ -24,7 +24,7 @@ def mc_pricer(normal_dist, spot, r, q, vol, tau, dt, ko_list, num_paths, ko_pric
         for j in range(len(ko_list)):
             if paths[i, ko_list[j]] >= ko_price:
                 nat_day = natural_day_list[j]
-                payoffs[i] = (notional * coupon_rate * nat_day / 244) * np.exp(-r * nat_day / 244)
+                payoffs[i] = (notional * coupon_rate * nat_day / 365) * np.exp(-r * nat_day / 365)
                 flag_ko[i] = 1
                 break
 
@@ -34,5 +34,6 @@ def mc_pricer(normal_dist, spot, r, q, vol, tau, dt, ko_list, num_paths, ko_pric
                 payoffs[i] = notional * np.minimum(paths[i, -1] / paths[i, 0] - 1, 0) * \
                              np.exp(-r * natural_day_list[-1])
                 flag_ki[i] = 1
-    payoffs = np.where(flag_ko + flag_ki == 0, notional * coupon_rate * np.exp(-r * natural_day_list[-1]), payoffs)
+    payoffs = np.where(flag_ko + flag_ki == 0,
+                       notional * coupon_rate * np.exp(-r * natural_day_list[-1] / 365), payoffs)
     return np.mean(payoffs) / notional
