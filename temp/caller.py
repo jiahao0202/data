@@ -19,4 +19,4 @@ class AutocallPricer:
                                                coupon_rate, natural_day_list, fixings)
         pv_down = AutocallPricer.autocall_pricer(spot_down, r, q, vol, tau, exp_tau, dt, ko_list, num_paths, ko_price, ki_price,
                                                  coupon_rate, natural_day_list, fixings)
-        return (pv_up - pv_down) / spot * 0.02
+        return (pv_up - pv_down) / (spot * 0.02)
