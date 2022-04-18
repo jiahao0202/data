@@ -67,20 +67,20 @@ if __name__ == "__main__":
                                   axis=1)
 
         frame['delta'] = frame.apply(lambda x:
-                                     AutocallPricer.autocall_pricer(spot=x['close'],
-                                                                    r=0.025,
-                                                                    q=0.,
-                                                                    vol=x['vols'],
-                                                                    tau=x['tau'],
-                                                                    exp_tau=exp_tau,
-                                                                    dt=1. / 244.,
-                                                                    ko_list=value['ko_list'],
-                                                                    num_paths=100000,
-                                                                    ko_price=value['ko_price'],
-                                                                    ki_price=value['ki_price'],
-                                                                    coupon_rate=coupon_dict[key],
-                                                                    natural_day_list=value['nat_ko_list'],
-                                                                    fixings=x['fixings']
-                                                                    ),
+                                     AutocallPricer.autocall_delta(spot=x['close'],
+                                                                   r=0.025,
+                                                                   q=0.,
+                                                                   vol=x['vols'],
+                                                                   tau=x['tau'],
+                                                                   exp_tau=exp_tau,
+                                                                   dt=1. / 244.,
+                                                                   ko_list=value['ko_list'],
+                                                                   num_paths=100000,
+                                                                   ko_price=value['ko_price'],
+                                                                   ki_price=value['ki_price'],
+                                                                   coupon_rate=coupon_dict[key],
+                                                                   natural_day_list=value['nat_ko_list'],
+                                                                   fixings=x['fixings']
+                                                                   ),
                                      axis=1)
         frame.to_csv(f"./000905_calc/{vol_scheme}/{key}.csv")
