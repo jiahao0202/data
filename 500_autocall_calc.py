@@ -24,7 +24,7 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     parser.add_option('-v', dest='vol_scheme', type='string')
     (options, args) = parser.parse_args()
-    vol_scheme = options.vol_scheme
+    vol_scheme = 'flat_3m' # options.vol_scheme
 
     if vol_scheme not in os.listdir("./000905_calc/"):
         os.makedirs(f'./000905_calc/{vol_scheme}')
@@ -44,21 +44,25 @@ if __name__ == "__main__":
                                                                         x[vol_schemes[vol_scheme]]), axis=1)
         exp_dt = datetime.strptime(value['expiration_date'], "%Y-%m-%d")
         frame['tau'] = frame.apply(lambda x: MetaData.year_fraction_trading(x.name, exp_dt), axis=1)
+        exp_tau = frame['tau'].values[0]
         frame['vols'] = frame.apply(lambda x: calc_step_vol(x['tau'], x['vol_surface']), axis=1)
         coupon_rate = coupon_dict[key]
+        frame['fixings'] = frame.apply(lambda x: list(frame[frame.index < x.name]['close'].values), axis=1)
         frame['pv'] = frame.apply(lambda x:
                                   AutocallPricer.autocall_pricer(spot=x['close'],
                                                                  r=0.025,
                                                                  q=0.,
                                                                  vol=x['vols'],
                                                                  tau=x['tau'],
+                                                                 exp_tau=exp_tau,
                                                                  dt=1. / 244.,
                                                                  ko_list=value['ko_list'],
                                                                  num_paths=100000,
                                                                  ko_price=value['ko_price'],
                                                                  ki_price=value['ki_price'],
                                                                  coupon_rate=coupon_dict[key],
-                                                                 natural_day_list=value['nat_ko_list']
+                                                                 natural_day_list=value['nat_ko_list'],
+                                                                 fixings=x['fixings']
                                                                  ),
                                   axis=1)
 
@@ -68,13 +72,15 @@ if __name__ == "__main__":
                                                                     q=0.,
                                                                     vol=x['vols'],
                                                                     tau=x['tau'],
+                                                                    exp_tau=exp_tau,
                                                                     dt=1. / 244.,
                                                                     ko_list=value['ko_list'],
                                                                     num_paths=100000,
                                                                     ko_price=value['ko_price'],
                                                                     ki_price=value['ki_price'],
                                                                     coupon_rate=coupon_dict[key],
-                                                                    natural_day_list=value['nat_ko_list']
+                                                                    natural_day_list=value['nat_ko_list'],
+                                                                    fixings=x['fixings']
                                                                     ),
                                      axis=1)
         frame.to_csv(f"./000905_calc/{vol_scheme}/{key}.csv")
