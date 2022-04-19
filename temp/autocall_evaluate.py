@@ -13,19 +13,18 @@ def rng(num_paths, tau, dt, fixings):
 
 
 @jit(nopython=True)
-def autocall_mc_pricer(normal_dist, initial_price, spot, r, q, vol, tau, exp_tau, dt, ko_list, num_paths, ko_price, ki_price,
-                       coupon_rate, natural_day_list, notional=1000000):
+def autocall_mc_pricer(normal_dist, spot, initial_price, r, q, vol, tau, exp_tau, dt, ko_list, num_paths,
+                       ko_price, ki_price, coupon_rate, natural_day_list, notional=1000000):
     step_size = round(exp_tau / dt)
     z_size = round(tau / dt)
     diff_size = step_size - z_size
     paths = np.zeros((num_paths, step_size + 1))
-    paths[:, 0] = spot
-    for i in range(1, step_size + 1):
-        if i > diff_size:
-            paths[:, i] = paths[:, i - 1] * np.exp((r - q - .5 * vol[i - diff_size - 1] ** 2) *
-                                                   dt + vol[i - diff_size - 1] * np.sqrt(dt) * normal_dist[:, i - 1])
-        else:
-            paths[:, i] = normal_dist[:, i - 1]
+    for i in range(diff_size):
+        paths[:, i] = normal_dist[:, i]
+    paths[:, diff_size] = spot
+    for i in range(diff_size + 1, step_size+1):
+        paths[:, i] = paths[:, i - 1] * np.exp((r - q - .5 * vol[i - diff_size - 1] ** 2) *
+                                                dt + vol[i - diff_size - 1] * np.sqrt(dt) * normal_dist[:, i - 1])
     payoffs = np.zeros(num_paths)
     flag_ko = np.zeros(num_paths)
     flag_ki = np.zeros(num_paths)
