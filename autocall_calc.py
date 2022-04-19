@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     parser.add_option('-v', dest='vol_scheme', type='string')
     (options, args) = parser.parse_args()
-    vol_scheme = options.vol_scheme
+    vol_scheme = 'flat_3m' #options.vol_scheme
 
     if vol_scheme not in os.listdir("./000905_calc/"):
         os.makedirs(f'./000905_calc/{vol_scheme}')
@@ -62,7 +62,7 @@ if __name__ == "__main__":
                                                                  exp_tau=exp_tau,
                                                                  dt=1. / 244.,
                                                                  ko_list=value['ko_list'],
-                                                                 num_paths=100000,
+                                                                 num_paths=50000,
                                                                  ko_price=value['ko_price'],
                                                                  ki_price=value['ki_price'],
                                                                  coupon_rate=coupon_dict[key],
@@ -81,7 +81,7 @@ if __name__ == "__main__":
                                                                    exp_tau=exp_tau,
                                                                    dt=1. / 244.,
                                                                    ko_list=value['ko_list'],
-                                                                   num_paths=100000,
+                                                                   num_paths=50000,
                                                                    ko_price=value['ko_price'],
                                                                    ki_price=value['ki_price'],
                                                                    coupon_rate=coupon_dict[key],
