@@ -1,6 +1,6 @@
 import numpy as np
 from numerics.bs_pricer.vanilla_pricer import VanillaOptionPricer
-from scipy.optimize import brentq
+from scipy.optimize import bisect
 from temp.autocall_evaluate import autocall_mc_pricer, rng
 from utils.product_util import OptionTypeEnum
 
@@ -27,7 +27,7 @@ class Solver:
             return np.nan
 
         else:
-            solved_vol = brentq(func, lower_bdd, upper_bdd, xtol=precision, maxiter=max_iter)
+            solved_vol = bisect(func, lower_bdd, upper_bdd, xtol=precision, maxiter=max_iter)
             return solved_vol
 
     @staticmethod
@@ -40,7 +40,9 @@ class Solver:
                                ki_price,
                                ko_list,
                                natural_day_list,
-                               num_paths=50000,
+                               initial_price,
+                               exp_tau,
+                               num_paths=100000,
                                dt=1. / 244.,
                                precision=1e-6,
                                max_iter=100
@@ -49,11 +51,23 @@ class Solver:
         upper_bdd = 1.
 
         def func(coupon_rate_to_solve):
-            normal_dist_ = rng(num_paths, tau, dt)
-            return autocall_mc_pricer(normal_dist=normal_dist_, spot=spot, r=r, q=q, vol=vol, tau=tau,
-                                      dt=dt, ko_list=ko_list, num_paths=num_paths, ko_price=ko_price,
-                                      ki_price=ki_price, coupon_rate=coupon_rate_to_solve,
-                                      natural_day_list=natural_day_list)
+            normal_dist_ = rng(num_paths, tau, dt, np.array([]))
+            return autocall_mc_pricer(normal_dist=normal_dist_,
+                                                initial_price=initial_price,
+                                                  spot=spot,
+                                                  r=r,
+                                                  q=q,
+                                                  vol=vol,
+                                                  tau=tau,
+                                                  exp_tau=exp_tau,
+                                                  dt=1./244.,
+                                                  ko_list=np.array(ko_list),
+                                                  num_paths=num_paths,
+                                                  ko_price=ko_price,
+                                                  ki_price=ki_price,
+                                                  coupon_rate=coupon_rate_to_solve,
+                                                  natural_day_list=np.array(natural_day_list)
+                                      )
 
-        solved_coupon = brentq(func, lower_bdd, upper_bdd, xtol=precision, maxiter=max_iter)
+        solved_coupon = bisect(func, lower_bdd, upper_bdd, xtol=precision, maxiter=max_iter)
         return solved_coupon
