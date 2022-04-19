@@ -37,7 +37,7 @@ if __name__ == "__main__":
         coupon_ = Solver.autocall_coupon_solver(spot=initial_price,
                                                 initial_price=initial_price,
                                                 exp_tau=exp_tau,
-                                                r=0.,
+                                                r=0.025,
                                                 q=0.,
                                                 vol=vols,
                                                 tau=exp_tau,
@@ -45,7 +45,8 @@ if __name__ == "__main__":
                                                 ki_price=value['ki_price'],
                                                 ko_list=value['ko_list'],
                                                 natural_day_list=value['nat_ko_list'],
-                                                num_paths=50000
+                                                num_paths=50000,
+                                                precision=1e-8
                                                 )
         print("{}:{}".format(key, coupon_))
         coupon_dict[key] = coupon_

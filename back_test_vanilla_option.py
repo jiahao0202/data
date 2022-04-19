@@ -36,7 +36,7 @@ if __name__ == "__main__":
             if vol_scheme not in os.listdir(f'./back_test_result/{exp}/{start}'):
                 os.makedirs(f'./back_test_result/{exp}/{start}/{vol_scheme}')
             for stock in MetaData.stocks:
-                frame = SqliteHelper.load_data_from_db(stock, '2011-02-01', '2011-03-03')
+                frame = SqliteHelper.load_data_from_db(stock, start, end)
                 frame = process_individual_stock(frame, vol_scheme)
                 result = BackTestEngine.run(frame)
                 result_frame[stock] = float(result['cash'].values[-1])
