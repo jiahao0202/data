@@ -12,7 +12,7 @@ def rng(num_paths, tau, dt, fixings):
     return paths
 
 
-@jit(nopython=True)
+# @jit(nopython=True)
 def autocall_mc_pricer(normal_dist, initial_price, spot, r, q, vol, tau, exp_tau, dt, ko_list, num_paths, ko_price, ki_price,
                        coupon_rate,
                        natural_day_list, notional=1000000):
