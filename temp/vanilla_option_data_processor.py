@@ -23,6 +23,8 @@ vol_terms = {
 def process_individual_stock(stock: pd.DataFrame, vol_scheme: str):
     stock['r'] = 0.025
     stock['q'] = 0.
+    if stock.empty:
+        return pd.DataFrame()
     expiration_date = max(stock.index)
     stock['tau'] = stock.apply(lambda x: MetaData.year_fraction_trading(x.name, expiration_date), axis=1)
     if vol_scheme.startswith("flat"):

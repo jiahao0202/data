@@ -27,19 +27,26 @@ if __name__ == "__main__":
         os.makedirs(f'./back_test_result/{exp}')
     exp_term = exp_schemes[exp]
     for start, end in exp_term.items():
-        print('---------------------> Backtest date: {}'.format(start))
-        if start not in os.listdir(f'./back_test_result/{exp}'):
-            os.makedirs(f'./back_test_result/{exp}/{start}')
-        for vol_scheme in vol_schemes.keys():
-            result_frame = dict()
-            print("---------------> Backtest Vol Scheme: {}".format(vol_scheme))
-            if vol_scheme not in os.listdir(f'./back_test_result/{exp}/{start}'):
-                os.makedirs(f'./back_test_result/{exp}/{start}/{vol_scheme}')
-            for stock in MetaData.stocks:
-                frame = SqliteHelper.load_data_from_db(stock, start, end)
-                frame = process_individual_stock(frame, vol_scheme)
-                result = BackTestEngine.run(frame)
-                result_frame[stock] = float(result['cash'].values[-1])
-            result_frame = pd.DataFrame([result_frame]).T / notional
-            # print(result_frame)
-            result_frame.to_csv(f'./back_test_result/{exp}/{start}/{vol_scheme}/result.csv')
+        if start >= '2012-04-05':
+            print('---------------------> Backtest date: {}'.format(start))
+            if start not in os.listdir(f'./back_test_result/{exp}'):
+                os.makedirs(f'./back_test_result/{exp}/{start}')
+            for vol_scheme in vol_schemes.keys():
+                result_frame = dict()
+                print("---------------> Backtest Vol Scheme: {}".format(vol_scheme))
+                if vol_scheme not in os.listdir(f'./back_test_result/{exp}/{start}'):
+                    os.makedirs(f'./back_test_result/{exp}/{start}/{vol_scheme}')
+                for stock in MetaData.stocks:
+                    frame = SqliteHelper.load_data_from_db(stock, start, end)
+                    frame = process_individual_stock(frame, vol_scheme)
+                    if frame.empty:
+                        pass
+                    else:
+                        if min(frame['vol'] <= 1e-2):
+                            pass
+                        else:
+                            result = BackTestEngine.run(frame)
+                            result_frame[stock] = float(result['cash'].values[-1])
+                result_frame = pd.DataFrame([result_frame]).T / notional
+                # print(result_frame)
+                result_frame.to_csv(f'./back_test_result/{exp}/{start}/{vol_scheme}/result.csv')

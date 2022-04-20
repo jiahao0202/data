@@ -1,3 +1,4 @@
+import numpy as np
 from math import exp, log, sqrt
 from scipy.stats import norm
 from scipy.special import ndtr
@@ -11,6 +12,8 @@ class VanillaOptionPricer:
     
     @staticmethod
     def price(spot, strike, vol, r, q, tau, option_type) -> float:
+        if vol == 0.:
+            return np.nan
         if tau < 1. / 244.:
             return max(0, spot-strike) if option_type == OptionTypeEnum.Call else max(0, strike-spot)
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
@@ -22,6 +25,8 @@ class VanillaOptionPricer:
 
     @staticmethod
     def delta(spot, strike, vol, r, q, tau, option_type) -> float:
+        if vol == 0.:
+            return np.nan
         if tau < 1. / 244.:
             return max(0, spot-strike) if option_type == OptionTypeEnum.Call else max(0, strike-spot)
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
