@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     parser.add_option('-v', dest='vol_scheme', type='string')
     (options, args) = parser.parse_args()
-    vol_scheme = 'flat_3m' #options.vol_scheme
+    vol_scheme = options.vol_scheme
 
     if vol_scheme not in os.listdir("./000905_calc/"):
         os.makedirs(f'./000905_calc/{vol_scheme}')

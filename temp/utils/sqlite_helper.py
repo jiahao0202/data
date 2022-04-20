@@ -5,7 +5,7 @@ from patterns.singleton import Singleton
 
 class SqliteHelper(metaclass=Singleton):
 
-    conn = sqlite3.connect("/Users/jiahaofeng/github/data/temp/utils/ind_stocks.db")
+    conn = sqlite3.connect("D:/data/temp/utils/ind_stocks.db")
 
     @staticmethod
     def load_data_from_db(code, start_date, end_date):

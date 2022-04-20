@@ -48,7 +48,7 @@ if __name__ == "__main__":
                                                 num_paths=50000,
                                                 precision=1e-8
                                                 )
-        print("{}:{}".format(key, coupon_))
+        print("{}:  vol: {} cpr: {}".format(key, round(vols[0], 2), round(coupon_, 2)))
         coupon_dict[key] = coupon_
     with open(f"./coupon_new/{vol_scheme}.pickle", 'wb') as f:
         data = pickle.dumps(coupon_dict)
