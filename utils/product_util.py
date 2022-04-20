@@ -14,3 +14,13 @@ class CurveTypeEnum(Enum):
 class OptionTypeEnum(Enum):
     Call = "Call"
     Put = "Put"
+
+
+class BarrierTypeEnum(Enum):
+    Out = 'Out'
+    In = 'In'
+
+
+class BarrierDirectionEnum(Enum):
+    Up = 'Up'
+    Down = 'Down'
