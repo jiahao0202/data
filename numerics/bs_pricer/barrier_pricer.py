@@ -32,7 +32,7 @@ class BarrierOptionPricer:
     @staticmethod
     def calc_y1(spot, strike, barrier, q, vol, tau):
         mu = BarrierOptionPricer.calc_mu(q, vol)
-        return log(barrier**2 / (spot*strike)) / (vol * sqrt(tau)) + (1 + mu) * vol * sqrt(tau)
+        return log(barrier ** 2 / (spot * strike)) / (vol * sqrt(tau)) + (1 + mu) * vol * sqrt(tau)
 
     @staticmethod
     def calc_y2(spot, barrier, q, vol, tau):
@@ -42,7 +42,7 @@ class BarrierOptionPricer:
     @staticmethod
     def calc_a(spot, strike, r, q, vol, tau, phi):
         x1 = BarrierOptionPricer.calc_x1(spot, strike, q, vol, tau)
-        return phi * spot * exp((q-r) * tau) * ndtr(phi * x1) - \
+        return phi * spot * exp((q - r) * tau) * ndtr(phi * x1) - \
                phi * strike * exp(-r * tau) * ndtr(phi * x1 - phi * vol * sqrt(tau))
 
     @staticmethod
@@ -55,7 +55,7 @@ class BarrierOptionPricer:
     def calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita):
         y1 = BarrierOptionPricer.calc_y1(spot, strike, barrier, q, vol, tau)
         mu = BarrierOptionPricer.calc_mu(q, vol)
-        return phi * spot * exp((q-r) * tau) * (barrier / spot) ** (2 * (1 + mu)) * ndtr(ita * y1) - \
+        return phi * spot * exp((q - r) * tau) * (barrier / spot) ** (2 * (1 + mu)) * ndtr(ita * y1) - \
                phi * strike * exp(-r * tau) * (barrier / spot) ** (2 * mu) * ndtr(ita * y1 - ita * vol * sqrt(tau))
 
     @staticmethod
@@ -82,7 +82,113 @@ class BarrierOptionPricer:
                          (barrier / spot) ** (mu - lambda_) * ndtr(ita * z - 2 * ita * lambda_ * vol * sqrt(tau)))
 
     @staticmethod
-    def price_down_and_in_option(spot, strike, barrier, r, q, vol, tau, rabte):
+    def price_down_and_in_call_option(spot, strike, barrier, r, q, vol, tau, rebate):
         ita = 1
         phi = 1
-        return 0.
+        e = BarrierOptionPricer.calc_e(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return c + e
+        else:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return a - b + d + e
+
+    @staticmethod
+    def price_up_and_in_call_option(spot, strike, barrier, r, q, vol, tau, rebate):
+        ita = -1
+        phi = 1
+        e = BarrierOptionPricer.calc_e(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            return a + e
+        else:
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return b - c + d + e
+
+    @staticmethod
+    def price_down_and_in_put_option(spot, strike, barrier, r, q, vol, tau, rebate):
+        ita = 1
+        phi = -1
+        e = BarrierOptionPricer.calc_e(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return b - c + d + e
+        else:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            return a + e
+
+    @staticmethod
+    def price_up_and_in_put_option(spot, strike, barrier, r, q, vol, tau, rebate):
+        ita = -1
+        phi = -1
+        e = BarrierOptionPricer.calc_e(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return a - b + d + e
+        else:
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return c + e
+
+    @staticmethod
+    def price_down_and_out_call_option(spot, strike, barrier, r, q, vol, tau, rebate):
+        ita = 1
+        phi = 1
+        f = BarrierOptionPricer.calc_f(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return a - c + f
+        else:
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return b - d + f
+
+    @staticmethod
+    def price_up_and_out_call_option(spot, strike, barrier, r, q, vol, tau, rebate):
+        ita = -1
+        phi = 1
+        f = BarrierOptionPricer.calc_f(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            return f
+        else:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return a - b + c - d + f
+
+    @staticmethod
+    def price_down_and_out_put_option(spot, strike, barrier, r, q, vol, tau, rebate):
+        ita = 1
+        phi = -1
+        f = BarrierOptionPricer.calc_f(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return a - b + c - d + f
+        else:
+            return f
+
+    @staticmethod
+    def price_up_and_out_put_option(spot, strike, barrier, r, q, vol, tau, rebate):
+        ita = -1
+        phi = -1
+        f = BarrierOptionPricer.calc_f(spot, barrier, r, q, vol, tau, rebate, ita)
+        if strike > barrier:
+            b = BarrierOptionPricer.calc_b(spot, strike, barrier, r, q, vol, tau, phi)
+            d = BarrierOptionPricer.calc_d(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return b - d + f
+        else:
+            a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
+            c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
+            return a - c + f

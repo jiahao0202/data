@@ -24,3 +24,8 @@ class BarrierTypeEnum(Enum):
 class BarrierDirectionEnum(Enum):
     Up = 'Up'
     Down = 'Down'
+
+
+class RebateTypeEnum(Enum):
+    PayAtExpiry = "PayAtExpiry"
+    PayWhenHit = "PayWhenHit"
