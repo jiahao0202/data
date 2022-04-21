@@ -1,4 +1,3 @@
-import numpy as np
 from math import exp, log, sqrt
 from scipy.stats import norm
 from scipy.special import ndtr
@@ -12,8 +11,6 @@ class VanillaOptionPricer:
     
     @staticmethod
     def price(spot, strike, vol, r, q, tau, option_type) -> float:
-        if vol == 0.:
-            return np.nan
         if tau < 1. / 244.:
             return max(0, spot-strike) if option_type == OptionTypeEnum.Call else max(0, strike-spot)
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
@@ -25,8 +22,6 @@ class VanillaOptionPricer:
 
     @staticmethod
     def delta(spot, strike, vol, r, q, tau, option_type) -> float:
-        if vol == 0.:
-            return np.nan
         if tau < 1. / 244.:
             return max(0, spot-strike) if option_type == OptionTypeEnum.Call else max(0, strike-spot)
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
@@ -37,15 +32,11 @@ class VanillaOptionPricer:
 
     @staticmethod
     def gamma(spot, strike, vol, r, q, tau, option_type) -> float:
-        if tau < 1. / 244.:
-            return 0.
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
         return exp(-q * tau) * norm.pdf(d1)
 
     @staticmethod
     def theta(spot, strike, vol, r, q, tau, option_type) -> float:
-        if tau < 1. / 244.:
-            return 0.
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
         d2 = d1 - vol * sqrt(tau)
         if option_type == OptionTypeEnum.Call:
@@ -57,15 +48,11 @@ class VanillaOptionPricer:
 
     @staticmethod
     def vega(spot, strike, vol, r, q, tau, option_type) -> float:
-        if tau < 1. / 244.:
-            return 0.
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
         return spot * sqrt(tau) * exp(-q * tau) * norm.pdf(d1)
 
     @staticmethod
     def rho(spot, strike, vol, r, q, tau, option_type) -> float:
-        if tau < 1. / 244.:
-            return 0.
         d2 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau) - vol * sqrt(tau)
         if option_type == OptionTypeEnum.Call:
             return strike * tau * exp(-r * tau) * ndtr(d2)
@@ -74,8 +61,6 @@ class VanillaOptionPricer:
 
     @staticmethod
     def phi(spot, strike, vol, r, q, tau, option_type) -> float:
-        if tau < 1. / 244.:
-            return 0.
         d1 = VanillaOptionPricer.__d1(spot, strike, vol, r, q, tau)
         if option_type == OptionTypeEnum.Call:
             return -tau * spot * exp(-q * tau) * ndtr(d1)

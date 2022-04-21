@@ -36,57 +36,59 @@ if __name__ == "__main__":
         data = pickle.load(f)
         coupon_dict = pickle.loads(data)
     for key, value in test_dict.items():
-        print("{}:   @{}".format(key, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-        frame = pd.read_pickle(f'./000905/{key}.pickle')
-        if vol_scheme.startswith('flat'):
-            frame['vol_surface'] = frame.apply(lambda x: ConstVolSurface(x.name, x[vol_schemes[vol_scheme]]), axis=1)
-        else:
-            frame['vol_surface'] = frame.apply(lambda x: TermVolSurface(x.name,
-                                                                        [x / 244 for x in vol_terms[vol_scheme]],
-                                                                        x[vol_schemes[vol_scheme]]), axis=1)
-        exp_dt = datetime.strptime(value['expiration_date'], "%Y-%m-%d")
-        frame['tau'] = frame.apply(lambda x: MetaData.year_fraction_trading(x.name, exp_dt), axis=1)
-        exp_tau = frame['tau'].values[0]
-        initial_price = frame['close'].values[0]
-        frame['vols'] = frame.apply(lambda x: calc_step_vol(x['tau'], x['vol_surface']), axis=1)
-        coupon_rate = 0.5272264406085014 #coupon_dict[key]
-        frame['fixings'] = frame.apply(lambda x: list(frame[frame.index < x.name]['close'].values), axis=1)
+        if key >= "2009-06-01":
+            print("{}:   @{}".format(key, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            frame = pd.read_pickle(f'./000905/{key}.pickle')
+            if vol_scheme.startswith('flat'):
+                frame['vol_surface'] = frame.apply(lambda x: ConstVolSurface(x.name, x[vol_schemes[vol_scheme]]), axis=1)
+            else:
+                frame['vol_surface'] = frame.apply(lambda x: TermVolSurface(x.name,
+                                                                            [x / 244 for x in vol_terms[vol_scheme]],
+                                                                            x[vol_schemes[vol_scheme]]), axis=1)
+            exp_dt = datetime.strptime(value['expiration_date'], "%Y-%m-%d")
+            frame['tau'] = frame.apply(lambda x: MetaData.year_fraction_trading(x.name, exp_dt), axis=1)
+            exp_tau = frame['tau'].values[0]
+            initial_price = frame['close'].values[0]
+            frame['vols'] = frame.apply(lambda x: calc_step_vol(x['tau'], x['vol_surface']), axis=1)
+            coupon_rate = coupon_dict[key]
+            frame['fixings'] = frame.apply(lambda x: list(frame[frame.index < x.name]['close'].values), axis=1)
 
-        frame['pv'] = frame.apply(lambda x:
-                                  AutocallPricer.autocall_pricer(spot=x['close'],
-                                                                 initial_price=initial_price,
-                                                                 r=0.025,
-                                                                 q=0.,
-                                                                 vol=x['vols'],
-                                                                 tau=x['tau'],
-                                                                 exp_tau=exp_tau,
-                                                                 dt=1. / 244.,
-                                                                 ko_list=value['ko_list'],
-                                                                 num_paths=80000,
-                                                                 ko_price=value['ko_price'],
-                                                                 ki_price=value['ki_price'],
-                                                                 coupon_rate=coupon_rate,
-                                                                 natural_day_list=value['nat_ko_list'],
-                                                                 fixings=x['fixings']
-                                                                 ),
-                                  axis=1)
-
-        frame['delta'] = frame.apply(lambda x:
-                                     AutocallPricer.autocall_delta(spot=x['close'],
-                                                                   initial_price=initial_price,
-                                                                   r=0.025,
-                                                                   q=0.,
-                                                                   vol=x['vols'],
-                                                                   tau=x['tau'],
-                                                                   exp_tau=exp_tau,
-                                                                   dt=1. / 244.,
-                                                                   ko_list=value['ko_list'],
-                                                                   num_paths=80000,
-                                                                   ko_price=value['ko_price'],
-                                                                   ki_price=value['ki_price'],
-                                                                   coupon_rate=coupon_rate,
-                                                                   natural_day_list=value['nat_ko_list'],
-                                                                   fixings=x['fixings']
-                                                                   ),
-                                     axis=1)
-        frame.to_csv(f"./000905_calc/{vol_scheme}/{key}.csv")
+            frame['pv'] = frame.apply(lambda x:
+                                      AutocallPricer.autocall_pricer(spot=x['close'],
+                                                                     initial_price=initial_price,
+                                                                     r=0.025,
+                                                                     q=0.,
+                                                                     vol=x['vols'],
+                                                                     tau=x['tau'],
+                                                                     exp_tau=exp_tau,
+                                                                     dt=1. / 244.,
+                                                                     ko_list=value['ko_list'],
+                                                                     num_paths=50000,
+                                                                     ko_price=value['ko_price'],
+                                                                     ki_price=value['ki_price'],
+                                                                     coupon_rate=coupon_rate,
+                                                                     natural_day_list=value['nat_ko_list'],
+                                                                     fixings=x['fixings']
+                                                                     ),
+                                      axis=1)
+            """
+            frame['delta'] = frame.apply(lambda x:
+                                         AutocallPricer.autocall_delta(spot=x['close'],
+                                                                       initial_price=initial_price,
+                                                                       r=0.025,
+                                                                       q=0.,
+                                                                       vol=x['vols'],
+                                                                       tau=x['tau'],
+                                                                       exp_tau=exp_tau,
+                                                                       dt=1. / 244.,
+                                                                       ko_list=value['ko_list'],
+                                                                       num_paths=50000,
+                                                                       ko_price=value['ko_price'],
+                                                                       ki_price=value['ki_price'],
+                                                                       coupon_rate=coupon_rate,
+                                                                       natural_day_list=value['nat_ko_list'],
+                                                                       fixings=x['fixings']
+                                                                       ),
+                                         axis=1)
+            """
+            frame.to_csv(f"./000905_calc/{vol_scheme}/{key}.csv")

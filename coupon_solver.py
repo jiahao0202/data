@@ -19,7 +19,6 @@ if __name__ == "__main__":
     test_dict = decode_pickle("./temp/autocall_meta_data.pickle")
     coupon_dict = {}
     for key, value in test_dict.items():
-
         frame = pd.read_pickle(f'./000905/{key}.pickle')
         if vol_scheme.startswith('flat'):
             frame['vol_surface'] = frame.apply(lambda x: ConstVolSurface(x.name, x[vol_schemes[vol_scheme]]), axis=1)
@@ -46,9 +45,9 @@ if __name__ == "__main__":
                                                 ko_list=value['ko_list'],
                                                 natural_day_list=value['nat_ko_list'],
                                                 num_paths=50000,
-                                                precision=1e-8
+                                                precision=1e-6
                                                 )
-        print("{}:  vol: {} cpr: {}".format(key, round(vols[0], 2), round(coupon_, 2)))
+        print("{}:  vol: {} cpr: {}".format(key, round(vols[0], 5), round(coupon_, 5)))
         coupon_dict[key] = coupon_
     with open(f"./coupon_new/{vol_scheme}.pickle", 'wb') as f:
         data = pickle.dumps(coupon_dict)

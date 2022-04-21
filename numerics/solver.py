@@ -45,29 +45,30 @@ class Solver:
                                num_paths=100000,
                                dt=1. / 244.,
                                precision=1e-6,
-                               max_iter=100
+                               max_iter=200
                                ):
         lower_bdd = 0.
-        upper_bdd = 1.
+        upper_bdd = 0.8
 
         def func(coupon_rate_to_solve):
             normal_dist_ = rng(num_paths, tau, dt, np.array([]))
             return autocall_mc_pricer(normal_dist=normal_dist_,
-                                                initial_price=initial_price,
-                                                  spot=spot,
-                                                  r=r,
-                                                  q=q,
-                                                  vol=vol,
-                                                  tau=tau,
-                                                  exp_tau=exp_tau,
-                                                  dt=1./244.,
-                                                  ko_list=np.array(ko_list),
-                                                  num_paths=num_paths,
-                                                  ko_price=ko_price,
-                                                  ki_price=ki_price,
-                                                  coupon_rate=coupon_rate_to_solve,
-                                                  natural_day_list=np.array(natural_day_list)
+                                      initial_price=initial_price,
+                                      spot=spot,
+                                      r=r,
+                                      q=q,
+                                      vol=vol,
+                                      tau=tau,
+                                      exp_tau=exp_tau,
+                                      dt=1. / 244.,
+                                      ko_list=np.array(ko_list),
+                                      num_paths=num_paths,
+                                      ko_price=ko_price,
+                                      ki_price=ki_price,
+                                      coupon_rate=coupon_rate_to_solve,
+                                      natural_day_list=np.array(natural_day_list)
                                       )
 
         solved_coupon = bisect(func, lower_bdd, upper_bdd, xtol=precision, maxiter=max_iter)
+        print(func(solved_coupon))
         return solved_coupon
