@@ -3,7 +3,7 @@ from numba import jit
 
 
 def rng(num_paths, tau, dt, fixings):
-    np.random.seed(1234)
+    # np.random.seed(1234)
     step_size = round(tau / dt)
     paths = np.random.normal(size=(num_paths, step_size))
     if len(fixings) != 0:
