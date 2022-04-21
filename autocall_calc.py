@@ -33,8 +33,8 @@ if __name__ == "__main__":
 
     test_dict = decode_pickle("./temp/autocall_meta_data.pickle")
     with open(f"./coupon_new/{vol_scheme}.pickle", 'rb') as f:
-        data = pickle.load(f)
-        coupon_dict = pickle.loads(data)
+        coupon_dict = pickle.load(f)
+        coupon_dict = pickle.loads(coupon_dict)
     for key, value in test_dict.items():
         print("{}:   @{}".format(key, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         frame = pd.read_pickle(f'./000905/{key}.pickle')
