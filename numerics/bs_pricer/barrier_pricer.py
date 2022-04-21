@@ -1,7 +1,5 @@
 from math import exp, log, sqrt
 from scipy.special import ndtr
-from scipy.stats import norm
-from utils.product_util import OptionTypeEnum
 
 
 class BarrierOptionPricer:
@@ -192,3 +190,17 @@ class BarrierOptionPricer:
             a = BarrierOptionPricer.calc_a(spot, strike, r, q, vol, tau, phi)
             c = BarrierOptionPricer.calc_c(spot, strike, barrier, r, q, vol, tau, phi, ita)
             return a - c + f
+
+
+if __name__ == "__main__":
+    spot_ = 100
+    strike_ = 100
+    call_barrier_ = 150
+    put_barrier_ = 80
+    r_ = 0.025
+    q_ = 0.
+    vol_ = 0.3
+    tau_ = 1.
+    rebate_ = 0.
+    pv1 = BarrierOptionPricer.price_up_and_out_call_option(spot_, strike_, call_barrier_, r_, q_, vol_, tau_, rebate_)
+    print(pv1)
