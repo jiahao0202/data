@@ -87,4 +87,4 @@ if __name__ == "__main__":
                                                                    fixings=x['fixings']
                                                                    ),
                                      axis=1)
-        frame.to_csv(f"./000905_calc/{vol_scheme}/{key}.csv")
+        frame.to_csv(f"./000905_calc_depreciate/{vol_scheme}/{key}.csv")
