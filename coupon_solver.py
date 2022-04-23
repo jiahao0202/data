@@ -1,4 +1,6 @@
 import optparse
+
+import numpy as np
 import pandas as pd
 import pickle
 from autocall_calc import calc_step_vol
@@ -6,9 +8,9 @@ from datetime import datetime
 from market_data.surface.const_vol_surface import ConstVolSurface
 from market_data.surface.term_vol_surface import TermVolSurface
 from numerics.solver import Solver
+from temp.caller import AutocallPricer
 from temp.meta_data import decode_pickle, MetaData
 from temp.vanilla_option_data_processor import vol_schemes, vol_terms
-
 
 if __name__ == "__main__":
     parser = optparse.OptionParser()
@@ -44,10 +46,26 @@ if __name__ == "__main__":
                                                 ki_price=value['ki_price'],
                                                 ko_list=value['ko_list'],
                                                 natural_day_list=value['nat_ko_list'],
-                                                num_paths=50000,
+                                                num_paths=100000,
                                                 precision=1e-6
                                                 )
-        print("{}:  vol: {} cpr: {}".format(key, round(vols[0], 5), round(coupon_, 5)))
+        pv = AutocallPricer.autocall_pricer(spot=initial_price,
+                                            initial_price=initial_price,
+                                            r=0.025,
+                                            q=0.,
+                                            vol=vols,
+                                            tau=exp_tau,
+                                            dt=1./244.,
+                                            exp_tau=exp_tau,
+                                            ko_price=value['ko_price'],
+                                            ki_price=value['ki_price'],
+                                            ko_list=value['ko_list'],
+                                            natural_day_list=value['nat_ko_list'],
+                                            coupon_rate=coupon_,
+                                            fixings=np.array([]),
+                                            num_paths=100000
+                                            )
+        print("{} cpr: {}   pv:   {}".format(key, round(coupon_, 8), round(pv, 8)))
         coupon_dict[key] = coupon_
     with open(f"./coupon_new/{vol_scheme}.pickle", 'wb') as f:
         data = pickle.dumps(coupon_dict)

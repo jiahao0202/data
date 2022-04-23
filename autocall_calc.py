@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     parser.add_option('-v', dest='vol_scheme', type='string')
     (options, args) = parser.parse_args()
-    vol_scheme = options.vol_scheme
+    vol_scheme = 'term_vol_3' #options.vol_scheme
 
     if vol_scheme not in os.listdir("./000905_calc/"):
         os.makedirs(f'./000905_calc/{vol_scheme}')
@@ -51,6 +51,7 @@ if __name__ == "__main__":
         frame['vols'] = frame.apply(lambda x: calc_step_vol(x['tau'], x['vol_surface']), axis=1)
         coupon_rate = coupon_dict[key]
         frame['fixings'] = frame.apply(lambda x: list(frame[frame.index < x.name]['close'].values), axis=1)
+        frame = frame.loc[[frame.index[0]], :]
         frame['pv'] = frame.apply(lambda x:
                                   AutocallPricer.autocall_pricer(spot=x['close'],
                                                                  initial_price=initial_price,
@@ -69,6 +70,7 @@ if __name__ == "__main__":
                                                                  fixings=x['fixings']
                                                                  ),
                                   axis=1)
+        """
         frame['delta'] = frame.apply(lambda x:
                                      AutocallPricer.autocall_delta(spot=x['close'],
                                                                    initial_price=initial_price,
@@ -87,4 +89,5 @@ if __name__ == "__main__":
                                                                    fixings=x['fixings']
                                                                    ),
                                      axis=1)
-        frame.to_csv(f"./000905_calc_depreciate/{vol_scheme}/{key}.csv")
+        """
+        frame.to_csv(f"./000905_calc/{vol_scheme}/{key}.csv")
