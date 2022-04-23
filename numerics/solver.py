@@ -46,9 +46,9 @@ class Solver:
                                num_paths=100000,
                                dt=1. / 244.,
                                precision=1e-6,
-                               max_iter=500
+                               max_iter=600
                                ):
-        lower_bdd = 0.
+        lower_bdd = 0.01
         upper_bdd = 0.6
 
         def func(coupon_rate_to_solve):

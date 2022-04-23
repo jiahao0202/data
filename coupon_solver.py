@@ -47,7 +47,7 @@ if __name__ == "__main__":
                                                 ko_list=value['ko_list'],
                                                 natural_day_list=value['nat_ko_list'],
                                                 num_paths=100000,
-                                                precision=1e-6
+                                                precision=1e-3
                                                 )
         pv = AutocallPricer.autocall_pricer(spot=initial_price,
                                             initial_price=initial_price,
@@ -66,7 +66,9 @@ if __name__ == "__main__":
                                             num_paths=100000
                                             )
         print("{} cpr: {}   pv:   {}".format(key, round(coupon_, 8), round(pv, 8)))
-        coupon_dict[key] = coupon_
+        coupon_dict[key] = {}
+        coupon_dict[key]['cpr'] = coupon_
+        coupon_dict[key]['pv'] = pv
     with open(f"./coupon_new/{vol_scheme}.pickle", 'wb') as f:
         data = pickle.dumps(coupon_dict)
         pickle.dump(data, f)
