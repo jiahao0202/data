@@ -46,10 +46,10 @@ class Solver:
                                num_paths=100000,
                                dt=1. / 244.,
                                precision=1e-6,
-                               max_iter=600
+                               max_iter=1000
                                ):
-        lower_bdd = 0.01
-        upper_bdd = 0.6
+        lower_bdd = -0.1
+        upper_bdd = 1
 
         def func(coupon_rate_to_solve):
             return AutocallPricer.autocall_pricer(spot=spot,
