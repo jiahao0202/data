@@ -5,45 +5,47 @@ from utils.product_util import OptionTypeEnum
 
 
 class DigitalOptionPricer:
-    def __init__(self, spot, strike, vol, r, q, tau, option_type: OptionTypeEnum):
-        self.spot = spot
-        self.strike = strike
-        self.vol = vol
-        self.r = r
-        self.q = q
-        self.tau = tau
-        self.option_type = option_type
-        self.d1 = self.__d1()
-        self.d2 = self.d1 - self.vol * sqrt(tau)
+    @staticmethod
+    def __d1(spot, strike, r, q, vol, tau):
+        return (spot / strike + (r - q + .5 * vol ** 2) * tau) / \
+               (vol * sqrt(tau))
 
-    def __d1(self):
-        return (self.spot / self.strike + (self.r - self.q + .5 * self.vol ** 2) * self.tau) / \
-               (self.vol * sqrt(self.tau))
+    @staticmethod
+    def price(spot, strike, r, q, vol, tau, option_type: OptionTypeEnum):
+        d2 = DigitalOptionPricer.__d1(spot, strike, r, q, vol, tau) - vol * sqrt(tau)
+        if option_type == OptionTypeEnum.Call:
+            return exp(-r * tau) * ndtr(d2)
+        elif option_type == OptionTypeEnum.Put:
+            return exp(-r * tau) * (1 - ndtr(d2))
 
-    def price(self):
-        if self.option_type == OptionTypeEnum.Call:
-            return exp(-self.r * self.tau) * ndtr(self.d2)
-        elif self.option_type == OptionTypeEnum.Put:
-            return exp(-self.r * self.tau) * (1 - ndtr(self.d2))
+    @staticmethod
+    def delta(spot, strike, r, q, vol, tau, option_type: OptionTypeEnum):
+        d2 = DigitalOptionPricer.__d1(spot, strike, r, q, vol, tau) - vol * sqrt(tau)
+        delta = exp(-r * tau) * norm.pdf(d2) / (vol * spot * sqrt(tau))
+        return delta if option_type == OptionTypeEnum.Call else -delta
 
-    def delta(self):
-        delta = exp(-self.r * self.tau) * norm.pdf(self.d2) / (self.vol * self.spot * sqrt(self.tau))
-        if self.option_type == OptionTypeEnum.Call:
-            return delta
-        elif self.option_type == OptionTypeEnum.Put:
-            return -1 * delta
+    @staticmethod
+    def gamma(spot ,strike, r, q, vol, tau, option_type):
+        d1 = DigitalOptionPricer.__d1(spot, strike, r, q, vol, tau)
+        d2 = d1 - vol * sqrt(tau)
+        gamma = exp(-r * tau) * d1 * norm.pdf(d2) / ((spot * vol) ** 2 * tau)
+        return -gamma if option_type == OptionTypeEnum.Call else gamma
 
-    def gamma(self):
-        gamma = exp(-self.r * self.tau) * self.d1 * norm.pdf(self.d2) / (self.vol**2 * self.spot**2 * sqrt(self.tau))
-        if self.option_type == OptionTypeEnum.Call:
-            return -gamma
-        elif self.option_type == OptionTypeEnum.Put:
-            return gamma
+    @staticmethod
+    def theta(spot, strike, r, q, vol ,tau, option_type):
+        d1 = DigitalOptionPricer.__d1(spot, strike, r, q, vol, tau)
+        d2 = d1 - vol * sqrt(tau)
+        if option_type == OptionTypeEnum.Call:
+            return r * exp(-r * tau) * ndtr(d2) + \
+                   exp(-r * tau) * norm.pdf(d2) * (d1 / (2 * tau) - (r - q) / (vol * sqrt(tau)))
+        elif option_type == OptionTypeEnum.Put:
+            return r * exp(-r * tau) * (1 - ndtr(d2)) + \
+                   exp(-r * tau) * norm.pdf(d2) * (d1 / (2 * tau) - (r - q) / (vol * sqrt(tau)))
 
-    def theta(self):
-        value_decay = exp(-self.r * self.tau) * norm.pdf(self.d2) * \
-                      (.5 * self.d1 / self.tau - (self.r - self.q) / self.vol * sqrt(self.tau))
-        return self.r * self.price() - value_decay
+    @staticmethod
+    def vega(spot, strike, r, q, vol, tau, option_type: OptionTypeEnum):
+        d1 = DigitalOptionPricer.__d1(spot, strike, r, q, vol, tau)
+        d2 = d1 - vol * sqrt(tau)
+        vega = exp(-r * tau) * norm.pdf(d2) * d1 / vol
+        return -vega if option_type == OptionTypeEnum.Call else vega
 
-    def vega(self):
-        return -exp(-self.r * self.tau) * norm.pdf(self.d2) * (sqrt(self.tau) + self.d2 / self.vol)
